@@ -7,7 +7,7 @@ const GameModel_1 = __importDefault(require("../model/GameModel"));
 const gameController = {
     getGames: (req, res) => {
         const games = GameModel_1.default.getAllGames();
-        res.json({ games });
+        return res.json({ games });
     }
 };
 exports.default = gameController;
