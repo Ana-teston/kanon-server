@@ -1,8 +1,8 @@
 import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv'
-import gamesRouter from './routes/gamesRouter'
+import gamesRouter from './routes/games.router'
 import cors from 'cors'
-import slotMachineRouter from './routes/slotMachineRouter'
+import slotMachineRouter from './routes/slotMachine.router'
 
 dotenv.config()
 

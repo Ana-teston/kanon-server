@@ -1,5 +1,5 @@
 import express from 'express'
-import { spinSlotMachine } from '../controller/slotMachineController'
+import { spinSlotMachine } from '../controller/slotMachine.controller'
 
 const router = express.Router()
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import gamesModel from '../model/gamesModel'
+import gamesModel from '../model/games.model'
 
 const gamesController = {
   getGames: (req: Request, res: Response) => {
