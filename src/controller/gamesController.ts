@@ -1,22 +1,21 @@
-import { Request, Response } from "express";
-import gamesModel from "../model/gamesModel";
-
+import { Request, Response } from 'express'
+import gamesModel from '../model/gamesModel'
 
 const gamesController = {
-    getGames: (req: Request, res: Response) => {
-        const games = gamesModel.getAllGames();
-        return res.json({games});
-    },
-    getGameById: (req: Request, res: Response) => {
-        const gameId = req.params.id;
-        const game = gamesModel.getGameById(gameId);
+  getGames: (req: Request, res: Response) => {
+    const games = gamesModel.getAllGames()
+    return res.json({ games })
+  },
+  getGameById: (req: Request, res: Response) => {
+    const gameId = req.params.id
+    const game = gamesModel.getGameById(gameId)
 
-        if (game) {
-            return res.json({ game });
-        } else {
-            return res.status(404).json({ error: 'Game not found' });
-        }
-    },
+    if (game) {
+      return res.json({ game })
+    } else {
+      return res.status(404).json({ error: 'Game not found' })
+    }
+  },
 }
 
-export default gamesController;
+export default gamesController

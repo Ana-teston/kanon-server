@@ -1,10 +1,10 @@
 // In memory storage for user coins
-let userCoins = 20;
+let userCoins = 20
 
 export const getUserCoins = () => {
-    return userCoins;
-};
+  return userCoins
+}
 
 export const setUserCoins = (coins: number) => {
-    userCoins = coins;
-};
+  userCoins = coins
+}

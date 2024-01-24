@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.spinSlotMachine = void 0;
 const userCoins_1 = require("../../data/userCoins");
 const reels = [
-    ["cherry", "lemon", "apple", "lemon", "banana", "banana", "lemon", "lemon"],
-    ["lemon", "apple", "lemon", "lemon", "cherry", "apple", "banana", "lemon"],
-    ["lemon", "apple", "lemon", "apple", "cherry", "lemon", "banana", "lemon"]
+    ['cherry', 'lemon', 'apple', 'lemon', 'banana', 'banana', 'lemon', 'lemon'],
+    ['lemon', 'apple', 'lemon', 'lemon', 'cherry', 'apple', 'banana', 'lemon'],
+    ['lemon', 'apple', 'lemon', 'apple', 'cherry', 'lemon', 'banana', 'lemon'],
 ];
 const spinSlotMachine = (req, res) => {
     // slot machine spin logic
