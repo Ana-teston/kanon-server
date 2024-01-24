@@ -7,7 +7,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const dataFolder = path_1.default.join(__dirname, '../../data');
 const gamesFile = path_1.default.join(dataFolder, 'game-data.json');
-const gameModel = {
+const gamesModel = {
     getAllGames: () => {
         try {
             const gamesData = fs_1.default.readFileSync(gamesFile, 'utf-8');
@@ -15,9 +15,13 @@ const gameModel = {
             return games;
         }
         catch (error) {
-            console.log(error);
+            console.error(error);
             return [];
         }
     },
+    getGameById: (id) => {
+        const games = gamesModel.getAllGames();
+        return games.find((game) => game.id === id);
+    },
 };
-exports.default = gameModel;
+exports.default = gamesModel;

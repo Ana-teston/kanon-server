@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import gamesRouter from "./routes/gamesRouter";
 import cors from "cors";
+import slotMachineRouter from "./routes/slotMachineRouter";
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json());
 app.use("/api/", gamesRouter);
-
+app.use('/api/slot-machine', slotMachineRouter);
 
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
