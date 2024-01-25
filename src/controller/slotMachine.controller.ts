@@ -30,11 +30,26 @@ const spinReels = () => {
 }
 
 // Helper function to calculate coins won based on spin result
-const calculateCoinsWon = (spinResult: string[]) => {
-  // For simplicity, let's say the user wins if all symbols in a reel are the same
-  if (spinResult.every((symbol, index) => spinResult[0] === symbol)) {
-    return 10 // Win 10 coins
-  } else {
-    return 0 // No win
+const calculateCoinsWon = (spinResult: string[]): number => {
+  const joinedResult = spinResult.join(',');
+
+  const winConditions = {
+    'cherry,cherry,cherry': 50,
+    'cherry,cherry': 40,
+    'apple,apple,apple': 20,
+    'apple,apple': 10,
+    'banana,banana,banana': 15,
+    'banana,banana': 5,
+    'lemon,lemon,lemon': 3,
   }
-}
+
+  //check for win conditions
+  const conditions = Object.keys(winConditions);
+
+  for (const condition of conditions) {
+    if (joinedResult.startsWith(condition)) {
+      return winConditions[condition as keyof typeof winConditions];
+    }
+  }
+  return -1;
+};
