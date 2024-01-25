@@ -1,49 +1,51 @@
-import { Request, Response } from 'express'
-import { getUserCoins, setUserCoins } from '../../data/userCoins'
+import { Request, Response } from 'express';
+import * as userCoinsModule from '../../data/userCoins';
 
 const reels = [
-  ['cherry', 'lemon', 'apple', 'lemon', 'banana', 'banana', 'lemon', 'lemon'],
-  ['lemon', 'apple', 'lemon', 'lemon', 'cherry', 'apple', 'banana', 'lemon'],
-  ['lemon', 'apple', 'lemon', 'apple', 'cherry', 'lemon', 'banana', 'lemon'],
-]
+  ['🍒', '🍋', '🍎', '🍋', '🍌', '🍌', '🍋', '🍋'],
+  ['🍋', '🍎', '🍋', '🍋', '🍒', '🍎', '🍌', '🍋'],
+  ['🍋', '🍎', '🍋', '🍎', '🍒', '🍋', '🍌', '🍋'],
+];
 
-export const spinSlotMachine = (req: Request, res: Response) => {
-  // slot machine spin logic
-  const spinResult = spinReels()
-  const coinsWon = calculateCoinsWon(spinResult)
-  const currentCoins = getUserCoins()
+const spinReel = async (reelIndex: number): Promise<number> => {
+  let currentIndex = 0;
 
-  // Update user coins
-  setUserCoins(currentCoins - 1 + coinsWon)
+  // Define a function to spin one reel
+  const spin = (offset = 0): Promise<number> => {
+    return new Promise<number>((resolve) => {
+      const delta = (offset + 2) * reels[reelIndex].length + Math.round(Math.random() * reels[reelIndex].length);
+      setTimeout(() => {
+        // Update the current index for the next spin
+        currentIndex = (currentIndex + delta) % reels[reelIndex].length;
+        resolve(currentIndex);
+      }, offset * 150);
+    });
+  };
 
-  res.json({ spinResult, coinsWon, currentCoins })
-}
-
-// Helper function to simulate spinning the slot machine reels
-const spinReels = () => {
-  const result = []
-  for (let i = 0; i < reels.length; i++) {
-    const randomIndex = Math.floor(Math.random() * reels[i].length)
-    result.push(reels[i][randomIndex])
+  // Spin the reel for a certain duration
+  const spinDuration = 3 + Math.random() * 2;
+  for (let i = 0; i < spinDuration; i++) {
+    await spin(i);
   }
-  return result
-}
+
+  return currentIndex;
+};
 
 // Helper function to calculate coins won based on spin result
 const calculateCoinsWon = (spinResult: string[]): number => {
   const joinedResult = spinResult.join(',');
 
   const winConditions = {
-    'cherry,cherry,cherry': 50,
-    'cherry,cherry': 40,
-    'apple,apple,apple': 20,
-    'apple,apple': 10,
-    'banana,banana,banana': 15,
-    'banana,banana': 5,
-    'lemon,lemon,lemon': 3,
-  }
+    '🍒,🍒,🍒': 50,
+    '🍒,🍒': 40,
+    '🍎,🍎,🍎': 20,
+    '🍎,🍎': 10,
+    '🍌,🍌,🍌': 15,
+    '🍌,🍌': 5,
+    '🍋,🍋,🍋': 3,
+  };
 
-  //check for win conditions
+  // Check for win conditions
   const conditions = Object.keys(winConditions);
 
   for (const condition of conditions) {
@@ -51,5 +53,34 @@ const calculateCoinsWon = (spinResult: string[]): number => {
       return winConditions[condition as keyof typeof winConditions];
     }
   }
-  return -1;
+  return 0;
+};
+export const spinSlotMachine = async (req: Request, res: Response): Promise<void> => {
+  let currentCoins = userCoinsModule.getUserCoins();
+
+  // Check if the user has enough coins to play
+  if (currentCoins <= 0) {
+    res.json({ message: 'Game over. Insufficient coins to play.' });
+    return;
+  }
+
+  // Deduct one coin for playing
+  userCoinsModule.setUserCoins(currentCoins - 1); // Update user coins after deduction
+  currentCoins -= 1; // Update current coins locally
+
+  const results = await Promise.all([spinReel(0), spinReel(1), spinReel(2)]);
+  const spinResult = results.map((index, i) => reels[i][index]);
+
+  const coinsWon = calculateCoinsWon(spinResult);
+  const updatedCoins = currentCoins + coinsWon; // Update coins after winning
+
+  // Update user coins after winning
+  userCoinsModule.setUserCoins(updatedCoins);
+
+  res.json({ spinResult, coinsWon, updatedCoins });
+
+  // Optionally, check if the user has run out of coins after the spin and display a message.
+  if (updatedCoins <= 0) {
+    console.log('Game over. You have run out of coins.');
+  }
 };

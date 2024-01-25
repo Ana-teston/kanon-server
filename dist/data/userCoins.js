@@ -8,6 +8,9 @@ const getUserCoins = () => {
 };
 exports.getUserCoins = getUserCoins;
 const setUserCoins = (coins) => {
+    if (typeof coins !== 'number') {
+        throw new Error('Coins must be a number');
+    }
     userCoins = coins;
 };
 exports.setUserCoins = setUserCoins;

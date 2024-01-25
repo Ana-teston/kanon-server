@@ -5,6 +5,9 @@ export const getUserCoins = () => {
   return userCoins
 }
 
-export const setUserCoins = (coins: number) => {
-  userCoins = coins
-}
+export const setUserCoins = (coins: number): void => {
+  if (typeof coins !== 'number') {
+    throw new Error('Coins must be a number');
+  }
+  userCoins = coins;
+};

@@ -1,49 +1,105 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.spinSlotMachine = void 0;
-const userCoins_1 = require("../../data/userCoins");
-const reels = [
-    ['cherry', 'lemon', 'apple', 'lemon', 'banana', 'banana', 'lemon', 'lemon'],
-    ['lemon', 'apple', 'lemon', 'lemon', 'cherry', 'apple', 'banana', 'lemon'],
-    ['lemon', 'apple', 'lemon', 'apple', 'cherry', 'lemon', 'banana', 'lemon'],
-];
-const spinSlotMachine = (req, res) => {
-    // slot machine spin logic
-    const spinResult = spinReels();
-    const coinsWon = calculateCoinsWon(spinResult);
-    const currentCoins = (0, userCoins_1.getUserCoins)();
-    // Update user coins
-    (0, userCoins_1.setUserCoins)(currentCoins - 1 + coinsWon);
-    res.json({ spinResult, coinsWon, currentCoins });
-};
-exports.spinSlotMachine = spinSlotMachine;
-// Helper function to simulate spinning the slot machine reels
-const spinReels = () => {
-    const result = [];
-    for (let i = 0; i < reels.length; i++) {
-        const randomIndex = Math.floor(Math.random() * reels[i].length);
-        result.push(reels[i][randomIndex]);
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
     }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.spinSlotMachine = void 0;
+const userCoinsModule = __importStar(require("../../data/userCoins"));
+const reels = [
+    ['🍒', '🍋', '🍎', '🍋', '🍌', '🍌', '🍋', '🍋'],
+    ['🍋', '🍎', '🍋', '🍋', '🍒', '🍎', '🍌', '🍋'],
+    ['🍋', '🍎', '🍋', '🍎', '🍒', '🍋', '🍌', '🍋'],
+];
+const spinReel = (reelIndex) => __awaiter(void 0, void 0, void 0, function* () {
+    let currentIndex = 0;
+    // Define a function to spin one reel
+    const spin = (offset = 0) => {
+        return new Promise((resolve) => {
+            const delta = (offset + 2) * reels[reelIndex].length + Math.round(Math.random() * reels[reelIndex].length);
+            setTimeout(() => {
+                // Update the current index for the next spin
+                currentIndex = (currentIndex + delta) % reels[reelIndex].length;
+                resolve(currentIndex);
+            }, offset * 150);
+        });
+    };
+    // Spin the reel for a certain duration
+    const spinDuration = 3 + Math.random() * 2;
+    for (let i = 0; i < spinDuration; i++) {
+        yield spin(i);
+    }
+    return currentIndex;
+});
 // Helper function to calculate coins won based on spin result
 const calculateCoinsWon = (spinResult) => {
     const joinedResult = spinResult.join(',');
     const winConditions = {
-        'cherry,cherry,cherry': 50,
-        'cherry,cherry': 40,
-        'apple,apple,apple': 20,
-        'apple,apple': 10,
-        'banana,banana,banana': 15,
-        'banana,banana': 5,
-        'lemon,lemon,lemon': 3,
+        '🍒,🍒,🍒': 50,
+        '🍒,🍒': 40,
+        '🍎,🍎,🍎': 20,
+        '🍎,🍎': 10,
+        '🍌,🍌,🍌': 15,
+        '🍌,🍌': 5,
+        '🍋,🍋,🍋': 3,
     };
-    //check for win conditions
+    // Check for win conditions
     const conditions = Object.keys(winConditions);
     for (const condition of conditions) {
         if (joinedResult.startsWith(condition)) {
             return winConditions[condition];
         }
     }
-    return -1;
+    return 0;
 };
+const spinSlotMachine = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let currentCoins = userCoinsModule.getUserCoins();
+    // Check if the user has enough coins to play
+    if (currentCoins <= 0) {
+        res.json({ message: 'Game over. Insufficient coins to play.' });
+        return;
+    }
+    // Deduct one coin for playing
+    userCoinsModule.setUserCoins(currentCoins - 1); // Update user coins after deduction
+    currentCoins -= 1; // Update current coins locally
+    const results = yield Promise.all([spinReel(0), spinReel(1), spinReel(2)]);
+    const spinResult = results.map((index, i) => reels[i][index]);
+    const coinsWon = calculateCoinsWon(spinResult);
+    const updatedCoins = currentCoins + coinsWon; // Update coins after winning
+    // Update user coins after winning
+    userCoinsModule.setUserCoins(updatedCoins);
+    res.json({ spinResult, coinsWon, updatedCoins });
+    // Optionally, check if the user has run out of coins after the spin and display a message.
+    if (updatedCoins <= 0) {
+        console.log('Game over. You have run out of coins.');
+    }
+});
+exports.spinSlotMachine = spinSlotMachine;
