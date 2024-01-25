@@ -241,5 +241,12 @@
     "title": "Tome of Madness",
     "providerName": "Play'n GO",
     "thumb": null
+  },
+  {
+    "id": "locally-slot-machine",
+    "slug": "slot-machine",
+    "title": "Slot Machine",
+    "providerName": "locally",
+    "thumb": null
   }
 ]
