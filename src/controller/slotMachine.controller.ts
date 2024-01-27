@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import * as userCoinsModule from '../../data/userCoins';
 
 const reels = [
@@ -55,51 +55,55 @@ const calculateCoinsWon = (spinResult: string[]): number => {
   }
   return 0;
 };
-export const spinSlotMachine = async (req: Request, res: Response): Promise<void> => {
+export const spinSlotMachine = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   let currentCoins = userCoinsModule.getUserCoins();
 
-  // Check if the user has a session cookie indicating a page refresh
-  const isPageRefresh = req.cookies && req.cookies.refreshed;
+  try {
+    // Check if the user has a session cookie indicating a page refresh
+    const isPageRefresh = req.cookies && req.cookies.refreshed;
 
-  // Reset coins if it's a page refresh
-  if (isPageRefresh) {
-    currentCoins = 20; // Reset coins to the initial value
-    userCoinsModule.setUserCoins(currentCoins);
-  }
+    // Reset coins if it's a page refresh
+    if (isPageRefresh) {
+      currentCoins = 20; // Reset coins to the initial value
+      userCoinsModule.setUserCoins(currentCoins);
+    }
 
-  // Set a cookie to indicate that the page has been refreshed
-  res.cookie('refreshed', 'true', { maxAge: 1000 * 60 * 5 }); // Expires in 5 minutes
+    // Set a cookie to indicate that the page has been refreshed
+    res.cookie('refreshed', 'true', { maxAge: 1000 * 60 * 5 }); // Expires in 5 minutes
 
 
-  // Check if the user has enough coins to play
-  if (currentCoins <= 0) {
-    res.json({ message: 'Game over. Insufficient coins to play.' });
-    return;
-  }
+    // Check if the user has enough coins to play
+    if (currentCoins <= 0) {
+      res.json({ message: 'Game over. Insufficient coins to play.' });
+      return;
+    }
 
-  // Deduct one coin for playing
-  userCoinsModule.setUserCoins(currentCoins - 1); // Update user coins after deduction
-  currentCoins -= 1; // Update current coins locally
+    // Deduct one coin for playing
+    userCoinsModule.setUserCoins(currentCoins - 1); // Update user coins after deduction
+    currentCoins -= 1; // Update current coins locally
 
-  const results = await Promise.all([spinReel(0), spinReel(1), spinReel(2)]);
-  const spinResult = results.map((index, i) => reels[i][index]);
+    const results = await Promise.all([spinReel(0), spinReel(1), spinReel(2)]);
+    const spinResult = results.map((index, i) => reels[i][index]);
 
-  console.log('Spin Result:', spinResult);
+    console.log('Spin Result:', spinResult);
 
-  const coinsWon = calculateCoinsWon(spinResult);
-  console.log('Coins Won:', coinsWon);
+    const coinsWon = calculateCoinsWon(spinResult);
+    console.log('Coins Won:', coinsWon);
 
-  const updatedCoins = currentCoins + coinsWon; // Update coins after winning
-  console.log('Updated Coins:', updatedCoins);
+    const updatedCoins = currentCoins + coinsWon; // Update coins after winning
+    console.log('Updated Coins:', updatedCoins);
 
-  // Update user coins after winning
-  userCoinsModule.setUserCoins(updatedCoins);
+    // Update user coins after winning
+    userCoinsModule.setUserCoins(updatedCoins);
 
-  res.json({ spinResult, coinsWon, updatedCoins });
+    res.json({ spinResult, coinsWon, updatedCoins });
 
-  // Optionally, check if the user has run out of coins after the spin and display a message.
-  if (updatedCoins <= 0) {
-    console.log('Game over. You have run out of coins.');
+    // Optionally, check if the user has run out of coins after the spin and display a message.
+    if (updatedCoins <= 0) {
+      console.log('Game over. You have run out of coins.');
+    }
+  } catch (error) {
+    next(error); // Pass the error to the error handling middleware
   }
 
 };

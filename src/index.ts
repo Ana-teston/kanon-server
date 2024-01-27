@@ -4,6 +4,7 @@ import gamesRouter from './routes/games.router'
 import cors from 'cors'
 import slotMachineRouter from './routes/slotMachine.router'
 import errorHandler from './middleware/errorHandler'
+import userCoinsRouter from "./routes/userCoins.router";
 
 dotenv.config()
 
@@ -18,6 +19,7 @@ app.use(cors({ origin: 'http://localhost:3000' }))
 app.use(express.json())
 app.use('/api/', gamesRouter)
 app.use('/api/slot-machine', slotMachineRouter)
+app.use('/api/user-coins', userCoinsRouter)
 
 app.use(errorHandler);
 
