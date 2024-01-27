@@ -4,7 +4,7 @@ import gamesRouter from './routes/games.router'
 import cors from 'cors'
 import slotMachineRouter from './routes/slotMachine.router'
 import errorHandler from './middleware/errorHandler'
-import userCoinsRouter from "./routes/userCoins.router";
+import userCoinsRouter from './routes/userCoins.router'
 
 dotenv.config()
 
@@ -21,7 +21,7 @@ app.use('/api/', gamesRouter)
 app.use('/api/slot-machine', slotMachineRouter)
 app.use('/api/user-coins', userCoinsRouter)
 
-app.use(errorHandler);
+app.use(errorHandler)
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`)

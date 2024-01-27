@@ -1,4 +1,3 @@
+export * from './gameNotFound.exception'
 
-export * from './gameNotFound.exception';
-
-export * from './http.exception';
+export * from './http.exception'

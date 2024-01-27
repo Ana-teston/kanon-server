@@ -1,8 +1,8 @@
-import express from "express";
-import {getUserCoins} from "../controller/userCoins.controller";
+import express from 'express'
+import { getUserCoins } from '../controller/userCoins.controller'
 
-const router = express.Router();
+const router = express.Router()
 
-router.get('/', getUserCoins);
+router.get('/', getUserCoins)
 
-export default router;
+export default router
