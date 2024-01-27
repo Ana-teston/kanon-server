@@ -82,6 +82,15 @@ const calculateCoinsWon = (spinResult) => {
 };
 const spinSlotMachine = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let currentCoins = userCoinsModule.getUserCoins();
+    // Check if the user has a session cookie indicating a page refresh
+    const isPageRefresh = req.cookies && req.cookies.refreshed;
+    // Reset coins if it's a page refresh
+    if (isPageRefresh) {
+        currentCoins = 20; // Reset coins to the initial value
+        userCoinsModule.setUserCoins(currentCoins);
+    }
+    // Set a cookie to indicate that the page has been refreshed
+    res.cookie('refreshed', 'true', { maxAge: 1000 * 60 * 5 }); // Expires in 5 minutes
     // Check if the user has enough coins to play
     if (currentCoins <= 0) {
         res.json({ message: 'Game over. Insufficient coins to play.' });
@@ -92,8 +101,11 @@ const spinSlotMachine = (req, res) => __awaiter(void 0, void 0, void 0, function
     currentCoins -= 1; // Update current coins locally
     const results = yield Promise.all([spinReel(0), spinReel(1), spinReel(2)]);
     const spinResult = results.map((index, i) => reels[i][index]);
+    console.log('Spin Result:', spinResult);
     const coinsWon = calculateCoinsWon(spinResult);
+    console.log('Coins Won:', coinsWon);
     const updatedCoins = currentCoins + coinsWon; // Update coins after winning
+    console.log('Updated Coins:', updatedCoins);
     // Update user coins after winning
     userCoinsModule.setUserCoins(updatedCoins);
     res.json({ spinResult, coinsWon, updatedCoins });

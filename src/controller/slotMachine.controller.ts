@@ -58,6 +58,19 @@ const calculateCoinsWon = (spinResult: string[]): number => {
 export const spinSlotMachine = async (req: Request, res: Response): Promise<void> => {
   let currentCoins = userCoinsModule.getUserCoins();
 
+  // Check if the user has a session cookie indicating a page refresh
+  const isPageRefresh = req.cookies && req.cookies.refreshed;
+
+  // Reset coins if it's a page refresh
+  if (isPageRefresh) {
+    currentCoins = 20; // Reset coins to the initial value
+    userCoinsModule.setUserCoins(currentCoins);
+  }
+
+  // Set a cookie to indicate that the page has been refreshed
+  res.cookie('refreshed', 'true', { maxAge: 1000 * 60 * 5 }); // Expires in 5 minutes
+
+
   // Check if the user has enough coins to play
   if (currentCoins <= 0) {
     res.json({ message: 'Game over. Insufficient coins to play.' });
@@ -71,8 +84,13 @@ export const spinSlotMachine = async (req: Request, res: Response): Promise<void
   const results = await Promise.all([spinReel(0), spinReel(1), spinReel(2)]);
   const spinResult = results.map((index, i) => reels[i][index]);
 
+  console.log('Spin Result:', spinResult);
+
   const coinsWon = calculateCoinsWon(spinResult);
+  console.log('Coins Won:', coinsWon);
+
   const updatedCoins = currentCoins + coinsWon; // Update coins after winning
+  console.log('Updated Coins:', updatedCoins);
 
   // Update user coins after winning
   userCoinsModule.setUserCoins(updatedCoins);
@@ -83,4 +101,5 @@ export const spinSlotMachine = async (req: Request, res: Response): Promise<void
   if (updatedCoins <= 0) {
     console.log('Game over. You have run out of coins.');
   }
+
 };

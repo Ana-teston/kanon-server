@@ -246,7 +246,8 @@
     "id": "locally-slot-machine",
     "slug": "slot-machine",
     "title": "Slot Machine",
-    "providerName": "locally",
+    "providerName": "Locally",
+    "startUrl": "http://localhost:3000/slot-machine",
     "thumb": null
   }
 ]
