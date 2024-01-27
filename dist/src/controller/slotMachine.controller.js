@@ -82,6 +82,7 @@ const calculateCoinsWon = (spinResult) => {
 };
 const spinSlotMachine = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let currentCoins = userCoinsModule.getUserCoins();
+    console.log('Current Coins:', currentCoins);
     try {
         // Check if the user has a session cookie indicating a page refresh
         const isPageRefresh = req.cookies && req.cookies.refreshed;
@@ -109,7 +110,8 @@ const spinSlotMachine = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         console.log('Updated Coins:', updatedCoins);
         // Update user coins after winning
         userCoinsModule.setUserCoins(updatedCoins);
-        res.json({ spinResult, coinsWon, updatedCoins });
+        console.log('user updated', currentCoins);
+        res.json({ spinResult, coinsWon, updatedCoins, currentCoins });
         // Optionally, check if the user has run out of coins after the spin and display a message.
         if (updatedCoins <= 0) {
             console.log('Game over. You have run out of coins.');

@@ -57,6 +57,7 @@ const calculateCoinsWon = (spinResult: string[]): number => {
 };
 export const spinSlotMachine = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   let currentCoins = userCoinsModule.getUserCoins();
+  console.log('Current Coins:', currentCoins);
 
   try {
     // Check if the user has a session cookie indicating a page refresh
@@ -95,8 +96,9 @@ export const spinSlotMachine = async (req: Request, res: Response, next: NextFun
 
     // Update user coins after winning
     userCoinsModule.setUserCoins(updatedCoins);
+    console.log('user updated', currentCoins);
 
-    res.json({ spinResult, coinsWon, updatedCoins });
+    res.json({ spinResult, coinsWon, updatedCoins, currentCoins });
 
     // Optionally, check if the user has run out of coins after the spin and display a message.
     if (updatedCoins <= 0) {
