@@ -8,7 +8,6 @@ const validateCoinsMiddleware = (req, res, next) => {
     if (!validateCoins(coinsWon, 'coinsWon', res) || !validateCoins(updatedCoins, 'updatedCoins', res)) {
         return;
     }
-    // If validation passes, proceed to the next middleware or controller
     next();
 };
 exports.validateCoinsMiddleware = validateCoinsMiddleware;

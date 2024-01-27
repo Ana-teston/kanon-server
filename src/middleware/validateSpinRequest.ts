@@ -9,7 +9,6 @@ export const validateCoinsMiddleware = (req: Request, res: Response, next: NextF
         return;
     }
 
-    // If validation passes, proceed to the next middleware or controller
     next();
 };
 

@@ -60,18 +60,6 @@ export const spinSlotMachine = async (req: Request, res: Response, next: NextFun
   console.log('Current Coins:', currentCoins);
 
   try {
-    // Check if the user has a session cookie indicating a page refresh
-    const isPageRefresh = req.cookies && req.cookies.refreshed;
-
-    // Reset coins if it's a page refresh
-    if (isPageRefresh) {
-      currentCoins = 20; // Reset coins to the initial value
-      userCoinsModule.setUserCoins(currentCoins);
-    }
-
-    // Set a cookie to indicate that the page has been refreshed
-    res.cookie('refreshed', 'true', { maxAge: 1000 * 60 * 5 }); // Expires in 5 minutes
-
 
     // Check if the user has enough coins to play
     if (currentCoins <= 0) {
@@ -98,12 +86,34 @@ export const spinSlotMachine = async (req: Request, res: Response, next: NextFun
     userCoinsModule.setUserCoins(updatedCoins);
     console.log('user updated', currentCoins);
 
-    res.json({ spinResult, coinsWon, updatedCoins, currentCoins });
+    res.json({
+      reelStates: results.map((index, i) => ({
+        reelIndex: i,
+        currentIndex: index,
+        symbols: reels[i],
+      })),
+      spinResult,
+      coinsWon,
+      updatedCoins,
+      currentCoins,
+    });
 
     // Optionally, check if the user has run out of coins after the spin and display a message.
-    if (updatedCoins <= 0) {
+    if (updatedCoins <= 0 || currentCoins <= 0) {
       console.log('Game over. You have run out of coins.');
-    }
+      // Check if the user is requesting a restart
+      const isRestartRequested = req.query.restart === 'true';
+
+      if (isRestartRequested) {
+        // Give the user 20 coins to start again
+        currentCoins = 20;
+        userCoinsModule.setUserCoins(currentCoins);
+          console.log('Restarted. Coins:', currentCoins);
+        // Clear the restart query parameter to avoid unnecessary restarts
+        res.redirect('/api/slot-machine/spin');
+        return;
+      }
+      }
   } catch (error) {
     next(error); // Pass the error to the error handling middleware
   }

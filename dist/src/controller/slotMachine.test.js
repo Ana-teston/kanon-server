@@ -43,7 +43,8 @@ describe('Slot Machine Controller', () => {
         const req = {};
         const jsonMock = jest.fn();
         const res = { json: jsonMock };
-        yield (0, slotMachine_controller_1.spinSlotMachine)(req, res);
+        const next = jest.fn();
+        yield (0, slotMachine_controller_1.spinSlotMachine)(req, res, next);
         expect(jsonMock).toHaveBeenCalled();
         const response = jsonMock.mock.calls[0][0];
         expect(response).toHaveProperty('spinResult');
@@ -56,7 +57,8 @@ describe('Slot Machine Controller', () => {
         const req = {};
         const jsonMock = jest.fn();
         const res = { json: jsonMock };
-        yield (0, slotMachine_controller_1.spinSlotMachine)(req, res);
+        const next = jest.fn();
+        yield (0, slotMachine_controller_1.spinSlotMachine)(req, res, next);
         expect(jsonMock).toHaveBeenCalledWith({
             message: 'Game over. Insufficient coins to play.',
         });
@@ -67,7 +69,8 @@ describe('Slot Machine Controller', () => {
         const req = {};
         const jsonMock = jest.fn();
         const res = { json: jsonMock };
-        yield (0, slotMachine_controller_1.spinSlotMachine)(req, res);
+        const next = jest.fn();
+        yield (0, slotMachine_controller_1.spinSlotMachine)(req, res, next);
         // Verify that setUserCoins was called correctly
         expect(userCoinsModule.setUserCoins).toHaveBeenCalledWith(expect.any(Number));
     }));
