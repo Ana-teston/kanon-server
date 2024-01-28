@@ -63,7 +63,6 @@ export const spinSlotMachine = async (
   next: NextFunction
 ): Promise<void> => {
   let currentCoins = userCoinsModule.getUserCoins()
-  console.log('Current Coins:', currentCoins)
 
   try {
     // Check if the user has enough coins to play
@@ -79,17 +78,12 @@ export const spinSlotMachine = async (
     const results = await Promise.all([spinReel(0), spinReel(1), spinReel(2)])
     const spinResult = results.map((index, i) => reels[i][index])
 
-    console.log('Spin Result:', spinResult)
-
     const coinsWon = calculateCoinsWon(spinResult)
-    console.log('Coins Won:', coinsWon)
 
     const updatedCoins = currentCoins + coinsWon // Update coins after winning
-    console.log('Updated Coins:', updatedCoins)
 
     // Update user coins after winning
     userCoinsModule.setUserCoins(updatedCoins)
-    console.log('user updated', currentCoins)
 
     res.json({
       reelStates: results.map((index, i) => ({
@@ -105,7 +99,7 @@ export const spinSlotMachine = async (
 
     // Optionally, check if the user has run out of coins after the spin and display a message.
     if (updatedCoins <= 0 || currentCoins <= 0) {
-      console.log('Game over. You have run out of coins.')
+
       // Check if the user is requesting a restart
       const isRestartRequested = req.query.restart === 'true'
 
@@ -113,7 +107,7 @@ export const spinSlotMachine = async (
         // Give the user 20 coins to start again
         currentCoins = 20
         userCoinsModule.setUserCoins(currentCoins)
-        console.log('Restarted. Coins:', currentCoins)
+
         // Clear the restart query parameter to avoid unnecessary restarts
         res.redirect('/api/slot-machine/spin')
         return
