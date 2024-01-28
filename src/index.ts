@@ -21,7 +21,7 @@ app.use('/api/', gamesRouter)
 app.use('/api/slot-machine', slotMachineRouter)
 app.use('/api/user-coins', userCoinsRouter)
 
-app.use(errorHandler)
+
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`)
