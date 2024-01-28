@@ -22,7 +22,7 @@ const port: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 8000
 app.get('/', (req: Request, res: Response) => {
   res.send(`Request received from ${req.ip}`)
 })
-app.use(cors({ origin: 'http://localhost:3000' }))
+app.use(cors({ origin: ['http://localhost:3000', 'https://kanon-front-fdaef99181ef.herokuapp.com'] }))
 app.use(express.json())
 app.use('/api/', gamesRouter)
 app.use('/api/slot-machine', slotMachineRouter)
