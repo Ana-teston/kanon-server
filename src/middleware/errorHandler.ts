@@ -1,10 +1,7 @@
-import {  Response  } from 'express'
+import { Response } from 'express'
 import { HttpException, GameNotFoundException } from '../exceptions'
 
-const errorHandler = (
-  error: HttpException,
-  res: Response,
-) => {
+const errorHandler = (error: HttpException, res: Response) => {
   if (error instanceof GameNotFoundException) {
     return res.status(404).json({ error: error.message })
   } else {
